@@ -6,31 +6,28 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
-/**
- * Created by alexander on 27.01.17.
- */
 public class World extends JPanel implements ActionListener {
-    private final Timer mainTimer; // a timer that update program
-    private final Image img; // world image
-    private final int width; // the width of the world
-    private final int height; // the height of the world
-    private final int cellWidth; // cell width
-    private final int cellHeight; // cell height
-    private int x0; // left point of the world
-    private int y0; // the upper point of the world
-    private Random random; // random
+    private final Timer mainTimer;
+    private final Image img;
+    private final int width;
+    private final int height;
+    private final int cellWidth;
+    private final int cellHeight;
+    private int x0;
+    private int y0;
+    private Random random;
 
     public World() {
-        this.img = new ImageIcon(getClass().getResource("/Game.png")).getImage(); // world object with the image
-        this.width = img.getWidth(null); // the width of the world becomes equal to the width of the image
-        this.height = img.getHeight(null); // the height of the world becomes equal to the height of the image
-        this.x0 = 0; // left coordinate point of the X axis is the left part of the world - 0
-        this.y0 = 0; // coordinate of the top point in the Y-axis is equal to the top of the world - 0
-        this.mainTimer = new Timer(150, this); // timer starts every 3 seconds
-        this.cellHeight = 30; // the height of the cell is equal to 30
-        this.cellWidth = 30; // the height of the cell is equal to 30
-        this.random = new Random(); // creates a random object
-        this.mainTimer.start(); // start timer
+        this.img = new ImageIcon(getClass().getResource("/Game.png")).getImage();
+        this.width = img.getWidth(null);
+        this.height = img.getHeight(null);
+        this.x0 = 0;
+        this.y0 = 0;
+        this.mainTimer = new Timer(150, this);
+        this.cellHeight = 30;
+        this.cellWidth = 30;
+        this.random = new Random();
+        this.mainTimer.start();
     }
 
     public int getWidth() {
@@ -43,7 +40,7 @@ public class World extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         repaint();
-        life(); // starts life in the world
+        life();
     }
 
     /**
@@ -51,11 +48,8 @@ public class World extends JPanel implements ActionListener {
      * @return matrix
      */
     public int[][] matrix() {
-        int[][] arr = new int[30][30]; // creates a matrix of 30x30
+        int[][] arr = new int[30][30];
 
-        /*
-        adds a cell in the middle and around
-         */
         arr[arr.length / 2][arr.length / 2] = 1;
         arr[arr.length / 2][arr.length / 2 - 1] = 1;
         arr[arr.length / 2][arr.length / 2 - 2] = 1;
@@ -82,9 +76,6 @@ public class World extends JPanel implements ActionListener {
         for (int i = 0; i < cell.length; i++) {
             for (int j = 0; j < cell[i].length; j++) {
 
-                /*
-                column number becomes equal to X and Y is the line number
-                 */
                 if (cell[i][j] != 0) {
                     if (j > 1) {
                         x0 = cellWidth * j + j;
@@ -103,13 +94,13 @@ public class World extends JPanel implements ActionListener {
                     }
 
                     if (cell[i][j] == 1) {
-                        g.setColor(Color.green); // healthy cell
+                        g.setColor(Color.green);
                     } else if (cell[i][j] == 2) {
-                        g.setColor(Color.red); // infected cell
+                        g.setColor(Color.red);
                     } else if (cell[i][j] == 3) {
-                        g.setColor(Color.cyan); // immune cell
+                        g.setColor(Color.cyan);
                     }
-                    g.fillRect(x0, y0, cellWidth, cellHeight); // draws a filled square
+                    g.fillRect(x0, y0, cellWidth, cellHeight);
                 }
             }
         }
@@ -123,7 +114,7 @@ public class World extends JPanel implements ActionListener {
             for (int j = 0; j < cell[i].length; j++) {
                 int limitExceeded = 0;
                 if (i > 0 && i < cell.length-1 && j > 0 && j < cell.length-1) {
-                    limitExceeded = 1; // checks whether neighbors are outside the current cell
+                    limitExceeded = 1;
                 }
 
                 Boolean somebodyOnBottom = cell[i + limitExceeded][j] != 0;
@@ -135,16 +126,13 @@ public class World extends JPanel implements ActionListener {
                 Boolean somebodyOnUpLeft = cell[i - limitExceeded][j - limitExceeded] != 0;
                 Boolean somebodyOnUpRight = cell[i - limitExceeded][j + limitExceeded] != 0;
 
-                if (i >= cell.length || i <= 0 || j >= cell.length || j <= 0) { // if the cell is trying to get out of the borders of the world, it dies
+                if (i >= cell.length || i <= 0 || j >= cell.length || j <= 0) {
                     cell[i][j] = 0;
                 }
 
                 if (cell[i][j] != 0) {
-                    int near = 0; // the number of cells around the current
+                    int near = 0;
 
-                    /*
-                    check with how many cells bordering the current
-                     */
                     if (somebodyOnBottom) {
                         near++;
                     }
@@ -173,33 +161,33 @@ public class World extends JPanel implements ActionListener {
                     if (near > 4 || near < 2) {
                         cell[i][j] = 0;
                         continue;
-                    } // If the current cell near more than 4 or less than 2 other cells, it dies of overcrowding or loneliness
+                    }
 
-                    int chance = random.nextInt(100); // born cell state
-                    int nextGen; // the next generation that will be born 1 - healthy, 2 - infected, 3 - with immunity
-                    if (cell[i][j] == 3) { // if the current cell immunity
+                    int chance = random.nextInt(100);
+                    int nextGen;
+                    if (cell[i][j] == 3) {
                         if (chance < 75) {
-                            nextGen = 1; // cell immunity is a 75% chance of having a healthy
+                            nextGen = 1;
                         } else {
-                            nextGen = 3; // and a 25% chance with immunity
+                            nextGen = 3;
                         }
-                        int immunityFuture = random.nextInt(100); // state of a cell with immunity on the next move
+                        int immunityFuture = random.nextInt(100);
                         if (immunityFuture < 10) {
-                            cell[i][j] = 0; // It has a 10% chance of dying from an accident or from old age
+                            cell[i][j] = 0;
                         }
-                    } else if (cell[i][j] == 2) { // if the current cell is infected
+                    } else if (cell[i][j] == 2) {
                         if (chance < 75) {
-                            nextGen = 2; // infected cell has a 75% chance of having an infected
+                            nextGen = 2;
                         } else {
-                            nextGen = 3; // and 25% of the immune
+                            nextGen = 3;
                         }
-                        int futureInfected = random.nextInt(100); // the condition of the infected cell to the next turn
+                        int futureInfected = random.nextInt(100);
                         if (futureInfected < 75) {
                             cell[i][j] = 0; // 75% of cases, die
                         } else {
                             cell[i][j] = 3; // 25% and recovering gains immunity to disease
                         }
-                    } else { // if the current cell is healthy
+                    } else {
                         nextGen = 1; // healthy cell gives birth to a healthy 100% cases
                         int futureHealthy = random.nextInt(100); // state healthy cells on the next move
                         if (futureHealthy < 15) {
@@ -213,21 +201,21 @@ public class World extends JPanel implements ActionListener {
 
                     if (chanceOfBirth < 70) { // chance of birth is 70%
                         if (!somebodyOnBottom) {
-                            cell[i + limitExceeded][j] = nextGen; // if there's space for a cell of birth below the new cell is born there
+                            cell[i + limitExceeded][j] = nextGen;
                         } else if (!somebodyOnUp) {
-                            cell[i - limitExceeded][j] = nextGen; // if there's space for the birth of cells on top of the new cell is born there
+                            cell[i - limitExceeded][j] = nextGen;
                         } else if (!somebodyOnRight) {
-                            cell[i][j + limitExceeded] = nextGen; // if there's space to the right of the cells of the birth a new cell is born there
+                            cell[i][j + limitExceeded] = nextGen;
                         } else if (!somebodyOnLeft) {
-                            cell[i][j - limitExceeded] = nextGen; // if there's space for a cell birth left the new cell is born there
+                            cell[i][j - limitExceeded] = nextGen;
                         } else if (!somebodyOnBottomRight) {
-                            cell[i + limitExceeded][j + limitExceeded] = nextGen; // if there's space to the bottom right cell of birth the new cell is born there
+                            cell[i + limitExceeded][j + limitExceeded] = nextGen;
                         } else if (!somebodyOnUpLeft) {
-                            cell[i - limitExceeded][j - limitExceeded] = nextGen; // if there's space for a cell of birth at the top left is the new cell is born there
+                            cell[i - limitExceeded][j - limitExceeded] = nextGen;
                         } else if (!somebodyOnBottomLeft) {
-                            cell[i + limitExceeded][j - limitExceeded] = nextGen; // if there's space for a cell birth on the bottom left is the new cell is born there
+                            cell[i + limitExceeded][j - limitExceeded] = nextGen;
                         } else if (!somebodyOnUpRight) {
-                            cell[i - limitExceeded][j + limitExceeded] = nextGen; // if there is an empty seat for the top right cell birth the new cell is born there
+                            cell[i - limitExceeded][j + limitExceeded] = nextGen;
                         }
                     }
                 }
